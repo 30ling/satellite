@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UFT-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로봇팔2</title>
+
+    <style>
+        body{
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image:url(../space.png);
+        }
+        #cc{
+         border: 1px solid black;   
+        }
+        h1{
+            position: absolute;
+            top : 100px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>로봇팔을 사용해 위성을 수거하자.</h1>
+    <canvas id="cc" width="1500px" height="800px"></canvas>
+    <script>
+        const canvas = document.getElementById("cc");
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        var img2 = new Image();
+        img.src = '../22.png';
+        img2.scr = '../11.png';
+        const width = canvas.width;
+        const height = canvas.height;
+        const tankWidth = 50;
+        const tankHeight = 50;
+        let tankY = 700;
+        let tankX = 1400;
+        const tankDx = 3;
+        const tankDy = 3;
+        let tankLeftPressed = false;
+        let tankRightPressed = false;
+        let tankUpPressed = false;
+        let tankDownPressed = false;
+        let tankCenterX;
+        let tankCenterY;
+        const targetWidth = 50;
+        const targetHeight = 50;
+        const targetX = Math.floor(Math.random() * (1000 - targetWidth));
+        const targetY = Math.floor(Math.random() * (800 - targetHeight));
+
+        
+        const draw = () => {
+            ctx.clearRect(0, 0, width, height);
+            if (tankLeftPressed && tankX > 0) {
+                tankX -= tankDx;
+            }
+            if (tankRightPressed && tankX + tankWidth < width) {
+                tankX += tankDx;
+            }
+            if (tankDownPressed && tankY + tankHeight < height){
+                tankY += tankDy;
+            }
+            if (tankUpPressed && tankY > 0){
+                tankY -= tankDy;
+            }
+            drawTank();
+            drawEarth();
+            drawTarget();
+
+        };
+
+
+        const drawTank = () =>{
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            ctx.moveTo(tankX, tankY);
+            ctx.lineTo(tankX + tankWidth, tankY);
+            ctx.lineTo(tankX + tankWidth, tankY + tankHeight);
+            ctx.lineTo(tankX, tankY + tankHeight);
+            ctx.lineTo(tankX, tankY);
+            ctx.moveTo(tankCenterX, tankCenterY);
+
+            ctx.stroke();
+            ctx.closePath();
+        };
+
+        const drawTarget = () => {
+            ctx.drawImage(img, targetX, targetY-25, 100, 100);
+        }
+
+        const drawEarth = () => {
+            ctx.drawImage(img, 1320, 620, 300, 300);
+        };
+    
+        draw();
+
+    </script>
+    <script src = "../팀플/2.js"></script>
+</body>
