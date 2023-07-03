@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UFT-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>무덤궤도</title>
+
+    <style>
+        body{
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image:url(../earth-g14b76a2f2_1920.jpg);
+        }
+        #cc{
+         border: 1px solid black;   
+        }
+        h1{
+            position: absolute;
+            top : 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>청소용 위성을 쓰레기 위성에 붙이자.</h1>
+    <canvas id="cc" width="1500px" height="800px"></canvas>
+    <script>
+        const canvas = document.getElementById("cc");
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        img.src = '../11.png';
+        const width = canvas.width;
+        const height = canvas.height;
+        const tankWidth = 50;
+        const tankHeight = 50;
+        let tankX = 0;
+        const tankDx = 3;
+        let tankLeftPressed = false;
+        let tankRightPressed = false;
+        let tankCenterX;
+        let tankCenterY;
+        let cannonAngle = Math.PI / 2;
+        const cannonAngleDIF = Math.PI / 60;
+        const cannonLength = tankWidth * Math.sqrt(2);
+        const targetWidth = 50;
+        const targetHeight = 50;
+        const targetX = Math.floor(Math.random() * (1500 - targetWidth));
+        const targetY = 345;
+        let missileRadius = 5;
+        let missileX;
+        let missileY;
+        let isCharging = false;
+        let isFired = false;
+        let isHitted = false;
+        let gauge = Math.PI;
+        const gaugeDIF = Math.PI / 60;
+        const gaugeBarRadius = 30;
+        let missilePower;
+        let missileDx;
+        let missileDy;
+        const GRAVITY_ACCELERATION = 0.098;
+        
+        const draw = () => {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#FAE1AF';
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(0, 0, 1500, 200);
+            ctx.fillRect(0, 0, 1500, 200);
+
+            ctx.fillStyle = '#A0D1F7';
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(0, 270, 1500, 200);
+            ctx.fillRect(0, 270, 1500, 200);
+
+            tankCenterX = tankX + 0.5 * tankWidth;
+            tankCenterY = height - 0.5 * tankHeight;
+            if (tankLeftPressed && tankX > 0) {
+                tankX -= tankDx;
+            };
+            if (tankRightPressed && tankX + tankWidth < width) {
+                tankX += tankDx;
+            };
+            if (isCharging && !isFired) {
+                if (gauge < Math.PI * 2) {
+                    gauge += gaugeDIF;
+                }
+                drawGausing();
+            };
+            if (!isFired) {
+                missileX = tankCenterX + cannonLength * Math.cos(cannonAngle);
+                missileY = tankCenterY - cannonLength * Math.sin(cannonAngle);
+            } else {
+            missileDy -= GRAVITY_ACCELERATION;
+            missileX = missileX + missileDx;
+            missileY = missileY - missileDy;
+        };
+            drawTank();
+            drawTarget();
+            drawMissile();
+            checkMissile();
+            
+            if (!isHitted) {
+                drawTarget();
+                drawMissile();
+            }
+        };
+
+        const checkMissile = () => {
+            if (missileX <= 0 || missileX >= width || missileY >= height) {
+                isFired = false;
+            }
+            if (
+                missileX >= targetX &&
+                missileX <= targetX + targetWidth + 40 &&
+                missileY <= 380 &&
+                missileY >= 300
+            ) {
+                isHitted = true;
+                document.write('<script type="text/javascript" src="스크립트 경로"><"+"/script>');
+        
+                clearInterval(start);
+                if (confirm("위성 착지 성공.")) {
+                    location.replace("http://127.0.0.1:5500/%ED%8C%80%ED%94%8C/3.html");
+                }
+            }
+
+        };
+
+        const drawGausing = () => {
+            ctx.beginPath();
+                ctx.arc(
+                    tankCenterX,
+                    tankCenterY - cannonLength,
+                    gaugeBarRadius,
+                    Math.PI,
+                    gauge,
+                    false
+                );
+            ctx.stroke();
+        };
+
+        const drawMissile = () => {
+            ctx.beginPath();
+            ctx.arc(missileX, missileY, missileRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "blue";
+            ctx.fill();
+            ctx.closePath();
+        };
+
+        const drawTank = () =>{
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            ctx.moveTo(tankX, height - tankHeight);
+            ctx.lineTo(tankX + tankWidth, height - tankHeight);
+            ctx.lineTo(tankX + tankWidth, height);
+            ctx.lineTo(tankX, height);
+            ctx.lineTo(tankX, height - tankHeight);
+            ctx.moveTo(tankCenterX, tankCenterY);
+            ctx.lineTo(
+                tankCenterX + cannonLength * Math.cos(cannonAngle),
+                tankCenterY - cannonLength * Math.sin(cannonAngle)
+            );
+            ctx.stroke();
+            ctx.closePath();
+        };
+
+        const drawTarget = () => {
+            ctx.drawImage(img, targetX, targetY-25, 100, 100);
+        };
+    
+        draw();
+
+    </script>
+    <script src = "../팀플/1.js"></script>
+</body>
